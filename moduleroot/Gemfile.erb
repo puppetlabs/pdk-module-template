@@ -169,6 +169,11 @@ elsif Gem.win_platform?
   gems['win32-service'] =  ['<= 0.8.8', require: false]
 end
 
+if RUBY_VERSION.start_with?('1.')
+  # Ruby < 2.0.0 doesn't come pre-installed with rake, so we need the gem.
+  gems['rake'] = ['1< 12.1.0']
+end
+
 gems.each do |gem_name, gem_params|
   gem gem_name, *gem_params
 end
