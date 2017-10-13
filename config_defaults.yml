@@ -518,3 +518,17 @@ Gemfile:
     #     from_env: BEAKER_HOSTGENERATOR_VERSION
     #   - gem: beaker-rspec
     #     from_env: BEAKER_RSPEC_VERSION
+    # Everything in the `travisci` group has a condition of ENV['TRAVIS'].
+    # Some also have additional conditions based on ruby versions.
+    ':travisci':
+      - gem: 'rake'
+        version: '< 12.1.0'
+        condition: "ENV['TRAVIS'] and Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')"
+      - gem: 'puppetlabs_spec_helper'
+        condition: "ENV['TRAVIS']"
+      - gem: 'rubocop'
+        condition: "ENV['TRAVIS'] and Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.0.0')"
+      - gem: 'rubocop-rspec'
+        condition: "ENV['TRAVIS'] and Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.0.0')"
+      - gem: 'metadata-json-lint'
+        condition: "ENV['TRAVIS'] and Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.0.0')"
