@@ -1,0 +1,46 @@
+# Perform multiple checks on the repo:
+# - puppet-lint
+# - puppet parser validate
+# - yaml-lint for the hiera data
+#
+# These tests are done using a docker image that is pre-loaded
+# with the appropriate tools.
+#
+# As many things as make sense are being specified via "environment"
+# variables in the GitLab software. Since many things will be generic
+# to puppet code as a whole, they are specified in the Puppet group
+# CI/CD configuration, here:
+# https://git.eis.wwu.edu/groups/puppet/-/settings/ci_cd
+#
+# Some things can be overridden if necessary at the project level.
+
+image: ${PUPPET_PDK_IMAGE}
+
+stages:
+  - check
+  - deploy
+
+pdk-validate:
+  stage: check
+  tags:
+    - docker
+  script:
+    - echo "Validating ${CI_PROJECT_URL} branch ${CI_COMMIT_REF_NAME}"
+    - pdk validate --parallel
+
+pdk-unit-test:
+  stage: check
+  tags:
+    - docker
+  script:
+    - echo "Unit Testing ${CI_PROJECT_URL} branch ${CI_COMMIT_REF_NAME}"
+    - pdk test unit
+
+yaml-lint:
+  stage: check
+  tags:
+    - docker
+  script:
+    - echo "YAML linting for ${CI_PROJECT_URL} branch ${CI_COMMIT_REF_NAME}"
+    - bash -l -c "yaml-lint ${YAML_LINT_CONFIGS} ${CI_PROJECT_DIR}/hiera.yaml ${CI_PROJECT_DIR}/data/*"
+
